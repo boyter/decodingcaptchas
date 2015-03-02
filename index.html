@@ -70,8 +70,8 @@
 				</section>
 
 				<section>
-					<h2>Extracting Text</h2>
-					<p>Multivalued Image Decomposition (DEMO)</p>
+					<h2>Extracting Text (DEMO)</h2>
+					<p>Multivalued Image Decomposition</p>
 					<pre><code data-trim contenteditable>
 from PIL import Image
 from operator import itemgetter
@@ -99,12 +99,57 @@ for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
 				</section>
 
 				<section>
-					<h2>Identifying Text Locations</h2>
+					<h2>Identifying Character Locations</h2>
 					
 					<img width="45%" src="./code/output.blur.png">
 					<img width="45%" src="./code/output.fixed.png">
 					<img width="45%" src="./code/output.slice.png">
 					<img width="45%" src="./code/output.letter.png">
+
+					<p>How to know where the characters are?</p>
+					<p>Horizontal blur, fixed positions, vertical slices, letter dip checks, extract and test, disjoint sets.</p>
+
+				</section>
+
+
+				<section>
+					<h2>Identifying Character Locations (DEMO)</h2>
+					<p>Vertical Slices</p>
+					<pre><code data-trim contenteditable>
+					for y in range(im2.size[0]): # slice across
+  for x in range(im2.size[1]): # slice down
+    pix = im2.getpixel((y,x))
+    if pix != 255:
+      inletter = True
+  if foundletter == False and inletter == True:
+    foundletter = True
+    start = y
+
+  if foundletter == True and inletter == False:
+    foundletter = False
+    end = y
+    letters.append((start,end))
+
+  inletter=False
+</code></pre>
+
+				</section>
+
+				<section>
+					<h2>Result</h2>
+					<p>Each character is extracted</p>
+					<img width="80" height="200" src="./code/a95c10689bd19a2f1aa5c32966711974.gif" />
+					<img width="80" height="200" src="./code/7f18fb9f4ef59f1e37ccd4001d2ec951.gif" />
+					<img width="80" height="200" src="./code/1a09aeb0d13b9ed9b6c8c0b9c4f3a2db.gif" />
+					<img width="80" height="200" src="./code/21074e48f1873999825fefc4b69c068e.gif" />
+					<img width="80" height="200" src="./code/910c9cd8ecf1799cd5f2c8bd01fa7f1a.gif" />
+					<img width="80" height="200" src="./code/4cb958a1b03e7507ba261ef8d7e58035.gif" />
+				</section>
+
+				<section>
+					<h2>Training Sets</h2>
+					
+					<p>One to train, one to verify</p>
 
 					<p>How to know where the characters are?</p>
 					<p>Horizontal blur, fixed positions, vertical slices, letter dip checks, extract and test, disjoint sets.</p>
