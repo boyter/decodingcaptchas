@@ -69,6 +69,7 @@
 					<p><a href="http://www.boyter.org/decoding-captchas/">http://www.boyter.org/decoding-captchas/</a></p>
 					<p>There are some excellent tutorials and many published papers on it they are very light on algorithms or sample code.</p>
 					<p>It's what I wish existed when I was looking into the space.</p>
+					<p>Although I sometimes wish that had not...</p>
 				</section>
 
 				
@@ -85,10 +86,28 @@
 
 				<section>
 					<h2>Extracting Text</h2>
-					<p><img width="100%" src="./code/captcha.gif" /></p>
-					<p><img width="100%" src="./code/output.gif" /></p>
+					<pre><code data-trim contenteditable>
+from PIL import Image
+from operator import itemgetter
+
+im = Image.open("captcha.gif")
+im = im.convert("P")
+his = im.histogram()
+
+values = {}
+for i in range(256):
+  values[i] = his[i]
+
+print his
+
+for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
+  print j, k</code></pre>
 				</section>
 
+				<section>
+					<h2>Result</h2>
+					<p><img width="100%" src="./code/output.gif" /></p>
+				</section>
 
 
 <!-------------------------------------------------------------->
