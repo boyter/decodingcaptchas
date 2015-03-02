@@ -147,13 +147,43 @@ for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
 				</section>
 
 				<section>
-					<h2>Training Sets</h2>
+					<h2>Image Recognition</h2>
+
+					<p>Multiple options, neural network, support vector machines, bayesian classifier, vector space models, etc...</p>
+					<p>Each has its strengths and weaknesses.</p>
+
+				</section>
+
+				<section>
+					<h2>Vector Space</h2>
+					<pre><code data-trim contenteditable>
+					import math
+
+class VectorCompare:
+  def magnitude(self,concordance):
+    total = 0
+    for word,count in concordance.iteritems():
+      total += count ** 2
+    return math.sqrt(total)
+
+  def relation(self,concordance1, concordance2):
+    relevance = 0
+    topvalue = 0
+    for word, count in concordance1.iteritems():
+      if concordance2.has_key(word):
+        topvalue += count * concordance2[word]
+    return topvalue / (self.magnitude(concordance1) * self.magnitude(concordance2))
+</code></pre>
+<p><a href="http://www.boyter.org/2011/06/vector-space-search-model-explained/">Vector Space Explained</a></p>
+				</section>
+
+				<section>
+					<h2>Training Set</h2>
 					
-					<p>One to train, one to verify</p>
+					<p>The rule with training sets "One to train, one to verify"</p>
 
-					<p>How to know where the characters are?</p>
-					<p>Horizontal blur, fixed positions, vertical slices, letter dip checks, extract and test, disjoint sets.</p>
-
+					<p>Could build a corpus using random fonts with slight deformations.</p>
+					<p>But we can already extract the characters...</p>
 				</section>
 
 
