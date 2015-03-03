@@ -52,16 +52,17 @@
 				<section>
 					<h2>Why Would you Release This?!</h2>
 					<p><a href="http://www.boyter.org/decoding-captchas/">http://www.boyter.org/decoding-captchas/</a></p>
-					<p>There are some excellent tutorials and many published papers on it they are very light on algorithms or sample code.</p>
+					<p>There are some excellent tutorials and many published papers on it; BUT they are very light on algorithms or sample code.</p>
 					<p>It's what I wish existed when I was looking into the space.</p>
-					<p>Although I sometimes wish that had not...</p>
+					<p>Although I sometimes wish that had not written it...</p>
 				</section>
 
 				
 
 				<section>
 					<h2>Example / Weaknesses</h2>
-					<p><img width="100%" src="./code/captcha.gif" />
+					<img width="80%" src="./code/captcha.gif" />
+					<p>
 						Real life CAPTCHA (at the time) Some noise, but this is not a huge problem.
 					</p>
 					<p>
@@ -175,7 +176,7 @@ class VectorCompare:
         topvalue += count * concordance2[word]
     return topvalue / (self.magnitude(concordance1) * self.magnitude(concordance2))
 </code></pre>
-<p><a href="http://www.boyter.org/2011/06/vector-space-search-model-explained/">Vector Space Explained</a>, works by finding the sortest distance between points in multidimensional space.</p>
+<p><a href="http://www.boyter.org/2011/06/vector-space-search-model-explained/">Vector Space Explained</a>; works by finding the sortest distance between points in multidimensional space.</p>
 				</section>
 
 				<section>
@@ -189,12 +190,14 @@ class VectorCompare:
 
 					<p>Could build a corpus using random fonts with slight deformations.</p>
 					<p>But we can already extract the characters...</p>
+					<p><a href="http://www.boyter.org/2013/09/collection-letters-training/">Pre-built collection</a> of letters for training which contains about 200 examples of each letter.</p>
 				</section>
 
 				<section>
-					<h2>Building the Corpus (DEMO)</h2>
+					<h2>Building the Corpus</h2>
 					
 					<p>Download many CAPTCHA's and solve the manually. Use this to build the corpus.</p>
+					<p>Store as data or images? Data is usually faster, but can be less flexible.</p>
 <pre><code data-trim contenteditable>
 count = 0
 for letter in letters:
@@ -206,6 +209,105 @@ for letter in letters:
 </code></pre>
 				</section>
 
+				<section>
+					<h2>Result</h2>
+					
+					<img width="50%" src="./code/screenshot1.png" />
+					<img width="50%" src="./code/screenshot2.png" />
+				</section>
+
+				<section>
+					<h2>Putting it Together</h2>
+					<p>The final step. We have the text extractor, letter extractor, recognition technique and a corpus.</p>
+				</section>
+
+				<section>
+					<h2>Load the Corpus</h2>
+					<pre><code data-trim contenteditable>
+					def buildvector(im):
+  d1 = {}
+  count = 0
+  for i in im.getdata():
+    d1[count] = i
+    count += 1
+  return d1
+
+iconset =  
+['0','1','2','3','4','5','6','7','8','9','0','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+imageset = []
+
+for letter in iconset:
+  for img in os.listdir('./iconset/%s/'%(letter)):
+    temp = []
+    temp.append(buildvector(Image.open("./iconset/%s/%s"%(letter,img))))
+    imageset.append({letter:temp})
+</code></pre>
+				</section>
+
+				<section>
+					<h2>Where the Magic Happens (DEMO)</h2>
+					<pre><code data-trim contenteditable>
+v = VectorCompare()
+
+for letter in letters:
+  im3 = im2.crop(( letter[0] , 0, letter[1], im2.size[1] ))
+
+  guess = []
+
+  for image in imageset:
+    for x,y in image.iteritems():
+      if len(y) != 0:
+        guess.append( (v.relation(y[0], buildvector(im3)), x) )
+
+  guess.sort(reverse=True)
+  print "", guess[0]
+</code></pre>
+				</section>
+
+
+				<section>
+					<h2>Result</h2>
+					<img width="60%" src="./code/captcha.gif" />
+					<p>Degree of confidence and the guess for each letter.</p>
+					<pre><code data-trim contenteditable>
+(0.9637681159420289, '7')
+(0.96234028545977,   's')
+(0.9286884286888929, '9')
+(0.9835037060984447, 't')
+(0.9675116507250627, '9')
+(0.9698971168877263, 'j')
+</code></pre>
+				</section>
+
+				<section>
+					<h2>Result 2</h2>
+					<p>Trying it out on the whole data set</p>
+					<pre><code data-trim contenteditable>
+Correct Guesses -  13.0
+Wrong Guesses -  39.0
+Percentage Correct -  25.0
+Percentage Wrong -  75.0
+
+real	0m3.312s
+user	0m3.012s
+sys	0m0.088s
+</code></pre>
+<p>About 100,000 sucessful cracks per 24 hours per CPU core.</p>
+				</section>
+
+				<section>
+					<h2>Conclusion</h2>
+					<p>This CAPTCHA is cracked.</p>
+					<p>Most of the bad results come from the letter O and number 0 and other instances of similar looking letters and numbers.</p>
+					<p>Issues where letters in the CAPTCHA are joined and our technique is unable to split them correctly.</p>
+				</section>
+
+				<section>
+					<h2>Conclusion 2</h2>
+					<p>Unless you have a degree in machine learning don't write you own CAPTCHA.</p>
+					<p>If you are being targetted nothing will stop the bad guys.</p>
+					<p>For simple websites a honeypot field will be just as effective and annoy your users less.</p>
+				</section>
 
 
 			</div>

@@ -44,7 +44,7 @@ imageset = []
 for letter in iconset:
   for img in os.listdir('./iconset/%s/'%(letter)):
     temp = []
-    if img != "Thumbs.db": # windows check...
+    if img != "Thumbs.db" and img != ".DS_Store": # windows check...
       temp.append(buildvector(Image.open("./iconset/%s/%s"%(letter,img))))
     imageset.append({letter:temp})
 
