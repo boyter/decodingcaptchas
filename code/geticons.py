@@ -16,10 +16,6 @@ for x in range(im.size[1]):
     if pix == 220 or pix == 227: # these are the numbers to get
       im2.putpixel((y,x),0)
     
-#count = 0
-#for i in im.histogram():
-#  print count,i
-#  count += 1
 im2.save("output.gif")
 
 

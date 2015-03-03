@@ -10,7 +10,7 @@ values = {}
 for i in range(256):
   values[i] = his[i]
 
-print "\r\nHistorgram Values"
+print "\r\nHistogram Values"
 print his
 
 
