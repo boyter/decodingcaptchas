@@ -9,7 +9,7 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+		<link rel="stylesheet" href="css/theme/sky.css" id="theme">
 		<link rel="stylesheet" href="lib/css/zenburn.css">
 		<script>
 			var link = document.createElement( 'link' );
@@ -26,8 +26,8 @@
 		<div class="reveal">
 			<div class="slides">
 				<section>
-					<h1>Decoding CAPTCHA's for Fun and Profit</h1>
-					<h3>Using Python</h3>
+					<h1>Decoding CAPTCHA's</h1>
+					<h3>for Fun and Profit using Python</h3>
 					<p>
 						<small>Ben Boyter / <a href="http://twitter.com/boyter">@boyter</a></small>
 					</p>
@@ -39,17 +39,6 @@
 				</section>
 
 				<section>
-					<h2>What is a CAPTCHA?</h2>
-					<p>A CAPTCHA is basically just an implementation of a one way function.</p>
-					<p>Another example would be a hash function such as MD5 or SHA1</p>
-					<pre><code data-trim contenteditable>
->>> hashlib.md5("captcha").hexdigest()
-'70b29c4920daf4e51e8175179027e668'
-					</code></pre>
-					<p>One important difference! It should be easy for the human to reverse and not a computer.</p>
-				</section>
-
-				<section>
 					<h2>Why Would you Release This?!</h2>
 					<p><a href="http://www.boyter.org/decoding-captchas/">http://www.boyter.org/decoding-captchas/</a></p>
 					<p>There are some excellent tutorials and many published papers on it; BUT they are very light on algorithms or sample code.</p>
@@ -57,28 +46,42 @@
 					<p>Although I sometimes wish that had not written it...</p>
 				</section>
 
+				<section>
+					<h2>What is a CAPTCHA?</h2>
+					<p>A CAPTCHA is an implementation of a one way function.</p>
+					<p>Another example would be a hash function such as MD5 or SHA256</p>
+					<pre><code data-trim contenteditable>
+>>> hashlib.md5("captcha").hexdigest()
+'70b29c4920daf4e51e8175179027e668'
+					</code></pre>
+					<p>One VERY important difference! It should be easy for a human to reverse and not a computer.</p>
+				</section>
+
+				
+
 				
 
 				<section>
 					<h2>Example / Weaknesses</h2>
 					<img width="80%" src="./code/captcha.gif" />
 					<p>
-						Real life CAPTCHA (at the time) Some noise, but this is not a huge problem.
+						Was a real life CAPTCHA.
 					</p>
 					<p>
-						Single colour background, constant font, no mixing of case, characters aligned, no rotation, no deformation, same colour font, etc...
+						Single colour background, little noise, constant font, no mixing of case, characters aligned, no rotation, no deformation, same colour font, etc...
 					</p>
 				</section>
 
 				<section>
 					<h2>Extracting Text (DEMO)</h2>
-					<p>Multivalued Image Decomposition</p>
+					<p>Options include edge detection, horizontal blur, disjoint sets, multivalued image decomposition etc...</p>
+					<small>Multivalued Image Decomposition</small>
 					<pre><code data-trim contenteditable>
 from PIL import Image
 from operator import itemgetter
 
 im = Image.open("captcha.gif")
-im = im.convert("P")
+im = im.convert("P") # Convert to GIF
 his = im.histogram()
 
 values = {}
@@ -89,7 +92,6 @@ print his
 
 for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
   print j, k</code></pre>
-  					<small>Other options include edge detection, horizontal blur, disjoint sets etc...</small>
 				</section>
 
 				<section>
@@ -98,6 +100,14 @@ for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
 					<p><img width="60%" src="./code/output.220.gif" /></p>
 					<p>Pixel sets 220 and 227</p>
 					<p><img width="60%" src="./code/output.gif" /></p>
+				</section>
+
+				<section>
+					<h2>What about?</h2>
+					<p>Multicoloured backgrounds?</p>
+					<p>Multicoloured text?</p>
+					<p>Backgrounds with noise the same colour?</p>
+					<p>Multicolour text on multicolour backgrounds?</p>
 				</section>
 
 				<section>
@@ -118,9 +128,9 @@ for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
 					<h2>Identifying Character Locations (DEMO)</h2>
 					<p>Vertical Slices</p>
 					<pre><code data-trim contenteditable>
-					for y in range(im2.size[0]): # slice across
-  for x in range(im2.size[1]): # slice down
-    pix = im2.getpixel((y,x))
+					for y in xrange(im2.size[0]): # slice across
+  for x in xrange(im2.size[1]): # slice down
+    pix = im2.getpixel((y, x))
     if pix != 255:
       inletter = True
   if foundletter == False and inletter == True:
@@ -130,7 +140,7 @@ for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
   if foundletter == True and inletter == False:
     foundletter = False
     end = y
-    letters.append((start,end))
+    letters.append((start, end))
 
   inletter=False
 </code></pre>
@@ -162,19 +172,19 @@ for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
 					import math
 
 class VectorCompare:
-  def magnitude(self,concordance):
+  def magnitude(self, concordance):
     total = 0
-    for word,count in concordance.iteritems():
+    for word, count in concordance.iteritems():
       total += count ** 2
     return math.sqrt(total)
 
-  def relation(self,concordance1, concordance2):
-    relevance = 0
+  def relation(self, concordance1, concordance2):
     topvalue = 0
     for word, count in concordance1.iteritems():
       if concordance2.has_key(word):
         topvalue += count * concordance2[word]
-    return topvalue / (self.magnitude(concordance1) * self.magnitude(concordance2))
+    return topvalue / 
+    	(self.magnitude(concordance1) * self.magnitude(concordance2))
 </code></pre>
 <p><a href="http://www.boyter.org/2011/06/vector-space-search-model-explained/">Vector Space Explained</a>; works by finding the sortest distance between points in multidimensional space.</p>
 				</section>
@@ -188,9 +198,8 @@ class VectorCompare:
 						&ldquo;One to train, one to verify&rdquo;
 					</blockquote>
 
-					<p>Could build a corpus using random fonts with slight deformations.</p>
+					<p>Could build a corpus using random fonts with slight deformations using a <a href="http://www.boyter.org/2013/09/collection-letters-training/">pre-built collection</a>.</p>
 					<p>But we can already extract the characters...</p>
-					<p><a href="http://www.boyter.org/2013/09/collection-letters-training/">Pre-built collection</a> of letters for training which contains about 200 examples of each letter.</p>
 				</section>
 
 				<section>
@@ -202,9 +211,9 @@ class VectorCompare:
 count = 0
 for letter in letters:
   m = hashlib.md5()
-  im3 = im2.crop(( letter[0] , 0, letter[1],im2.size[1] ))
-  m.update("%s%s"%(time.time(),count))
-  im3.save("./%s.gif"%(m.hexdigest()))
+  im3 = im2.crop(( letter[0], 0, letter[1], im2.size[1] ))
+  m.update("%s%s" % (time.time(), count))
+  im3.save("./%s.gif" % (m.hexdigest()))
   count += 1
 </code></pre>
 				</section>
@@ -281,32 +290,43 @@ for letter in letters:
 
 				<section>
 					<h2>Result 2</h2>
-					<p>Trying it out on the whole data set</p>
+					<p>Trying on the whole data set</p>
 					<pre><code data-trim contenteditable>
-Correct Guesses -  13.0
-Wrong Guesses -  39.0
+Correct Guesses    -  13.0
+Wrong Guesses      -  39.0
 Percentage Correct -  25.0
-Percentage Wrong -  75.0
+Percentage Wrong   -  75.0
 
 real	0m3.312s
 user	0m3.012s
 sys	0m0.088s
 </code></pre>
-<p>About 100,000 sucessful cracks per 24 hours per CPU core.</p>
+<p>Works out to be about 100,000 sucessful cracks per 24 hours per CPU core.</p>
 				</section>
 
 				<section>
 					<h2>Conclusion</h2>
-					<p>This CAPTCHA is cracked.</p>
 					<p>Most of the bad results come from the letter O and number 0 and other instances of similar looking letters and numbers.</p>
 					<p>Issues where letters in the CAPTCHA are joined and our technique is unable to split them correctly.</p>
+					<p>This CAPTCHA is effectively cracked.</p>
 				</section>
 
 				<section>
 					<h2>Conclusion 2</h2>
-					<p>Unless you have a degree in machine learning don't write you own CAPTCHA.</p>
+					<blockquote>
+						&ldquo;Don’t write your own Crypto algorithms unless you have a Doctorate in Cryptography&rdquo;
+					</blockquote>
+					<p>Unless you have a doctorate in machine learning don't write you own CAPTCHA.</p>
 					<p>If you are being targetted nothing will stop the bad guys.</p>
 					<p>For simple websites a honeypot field will be just as effective and annoy your users less.</p>
+				</section>
+
+				<section>
+					<h2>Enjoy?</h2>
+					<p>Check out my other project,</p>
+					<img style="border:none; box-shadow: none;" src="./code/searchcode_logo.png" />
+					<br /><a href="https://searchcode.com/"><small>https://searchcode.com</small></a>
+					<p>Follow me on twitter @boyter</p>
 				</section>
 
 

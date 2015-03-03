@@ -67,7 +67,7 @@ start = 0
 end = 0
 
 letters = []
-
+print "\n"
 for y in range(im2.size[0]): # slice across
   for x in range(im2.size[1]): # slice down
     pix = im2.getpixel((y,x))
@@ -102,4 +102,4 @@ for letter in letters:
   print "",guess[0]
 
   count += 1
-
+print "\nEXPECTED - 7s9t9j"
