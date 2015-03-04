@@ -40,10 +40,10 @@
 
 				<section>
 					<h2>Why Would you Release This?!</h2>
-					<p><a href="http://www.boyter.org/decoding-captchas/">http://www.boyter.org/decoding-captchas/</a></p>
 					<p>There are some excellent tutorials and many published papers on it; BUT they are very light on algorithms or sample code.</p>
 					<p>It's what I wish existed when I was looking into the space.</p>
 					<p>Although I sometimes wish that had not written it...</p>
+					<p>Original article can be found at <a href="http://www.boyter.org/decoding-captchas/">http://www.boyter.org/decoding-captchas/</a></p>
 				</section>
 
 				<section>
@@ -264,7 +264,7 @@ for letter in letters:
   guess = []
 
   for image in imageset:
-    for x,y in image.iteritems():
+    for x, y in image.iteritems():
       if len(y) != 0:
         guess.append( (v.relation(y[0], buildvector(im3)), x) )
 
