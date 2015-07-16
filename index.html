@@ -27,10 +27,7 @@
 			<div class="slides">
 				<section>
 					<h1>Decoding CAPTCHA's</h1>
-					<h3>for Fun and Profit using Python</h3>
-					<p>
-						<small>Ben Boyter / <a href="http://twitter.com/boyter">@boyter</a></small>
-					</p>
+					<h3>for Fun and Profit</h3>
 				</section>
 
 				<section>
@@ -43,11 +40,12 @@
 					<p>There are some excellent tutorials and many published papers on it; BUT they are very light on algorithms or sample code.</p>
 					<p>It's what I wish existed when I was looking into the space.</p>
 					<p>Although I sometimes wish that had not written it...</p>
-					<p>Original article can be found at <a href="http://www.boyter.org/decoding-captchas/">http://www.boyter.org/decoding-captchas/</a></p>
+					<p>Original article can be found at <a href="http://www.boyter.org/decoding-captchas/">http://www.boyter.org/</a> or just search for "decoding captchas"</p>
 				</section>
 
 				<section>
 					<h2>What is a CAPTCHA?</h2>
+					<p>"Are you a human?" test.</p>
 					<p>A CAPTCHA is an implementation of a one way function.</p>
 					<p>Another example would be a hash function such as MD5 or SHA256</p>
 					<pre><code data-trim contenteditable>
@@ -57,31 +55,44 @@
 					<p>One VERY important difference! It should be easy for a human to reverse and not a computer.</p>
 				</section>
 
-				
+				<section>
+					<h2>Brief History</h2>
+					<p>First CAPTCHA's appeared around 1997 and were used by AltaVista to prevent spamdexing.</p>
+					<p>Quickly followed by all major search engines and free email services.</p>
+					<p>Obscuring text from computers is older then the above having come from bulletin board systems.</p>
+					<p>Shit is blocked whereas $#!+ is not. Later known as leetspeak.</p>
+				</section>
 
-				
+				<section>
+					<h2>Weaknesses in CAPTCHA's</h2>
+					<p>
+						Only letters or numbers, no mixing of case, constant font, character alignment, rotation, deformation, textured backgrounds, colour variations, character positions, contant background, dictionary words, small dictionary, letter connections, fixed font sizes etc...
+					</p>
+					<p>
+						Biggest weakness as usual are humans. Reasonably easy to offer humans a "reward" to decode the CAPTCHA for me.
+					</p>
+				</section>
 
 				<section>
 					<h2>Example / Weaknesses</h2>
 					<img width="80%" src="./code/captcha.gif" />
 					<p>
-						Was a real life CAPTCHA.
+						Was a real life CAPTCHA. Also inspiration for this.
 					</p>
 					<p>
-						Single colour background, little noise, constant font, no mixing of case, characters aligned, no rotation, no deformation, same colour font, etc...
+						Single colour background, little noise, constant font, no mixing of case, characters aligned, no rotation, no deformation, same colour font.
 					</p>
 				</section>
 
 				<section>
 					<h2>Extracting Text (DEMO)</h2>
-					<p>Options include edge detection, horizontal blur, disjoint sets, multivalued image decomposition etc...</p>
-					<small>Multivalued Image Decomposition</small>
+					<p>Options include edge detection, horizontal blur, disjoint sets, <strong>multivalued image decomposition</strong>, inverse operations etc...</p>
 					<pre><code data-trim contenteditable>
 from PIL import Image
 from operator import itemgetter
 
 im = Image.open("captcha.gif")
-im = im.convert("P") # Convert to GIF
+im = im.convert("P") # Convert to GIF !!! ASK WHY PLEASE !!!!
 his = im.histogram()
 
 values = {}
@@ -161,13 +172,97 @@ for j, k in sorted(values.items(), key=itemgetter(1), reverse=True)[:10]:
 				<section>
 					<h2>Image Recognition</h2>
 
-					<p>Multiple options, neural network, support vector machines, bayesian classifier, vector space models, etc...</p>
-					<p>Each has its strengths and weaknesses.</p>
+					<p>Multiple options, <a href="http://iamtrask.github.io/2015/07/12/basic-python-network/">neural network</a>, support vector machines, bayesian classifier, vector space models, etc...</p>
+					<p>Each has strengths and weaknesses.</p>
 
 				</section>
 
 				<section>
+					<h2>Neural Network (<a href="https://harthur.github.io/kittydar/">KITTYDAR</a>)</h2>
+<table>
+	<tr>
+		<th>Advantages</th>
+		<th>Disadvantages</th>
+	</tr>
+	<tr>
+		<td width="50%">
+			<small>
+Implementation's are available in most languages. <br>
+Can be very fast to identify characters. <br>
+Lots of documentation available. <br>
+Many tutorials exist which explain how to do character recognition.
+			</small>
+		</td>
+		<td>
+			<small>
+				Getting it right can be more art then skill as you have to balance the number of input nodes, output nodes, hidden nodes, training weight etc... <br>
+Can have long training iterations for large training sets while you wait for the results converge.<br>
+Difficult/Impossible to modify on the fly. <br>
+Can become over-trained on the data.
+			</small>
+		</td>
+	</tr>
+</table>
+				</section>
+
+				<section>
 					<h2>Vector Space</h2>
+<table>
+	<tr>
+		<th>Advantages</th>
+		<th>Disadvantages</th>
+	</tr>
+	<tr>
+		<td width="50%">
+			<small>
+Can modified on the fly by simply adding or removing vectors from the space. <br>
+Cannot become over-trained as it doesn't find a solution to the problem but matches everything for you. <br>
+Doesn't require training iterations, you can add and remove vectors and test again quickly. <br>
+Provides graded results, so you can work out what are the most similar characters and the least similar.
+			</small>
+		</td>
+		<td>
+			<small>
+Slower then neural network for recognition since it does a full scan of its training data. <br>
+They also are not as flexible when testing on new things. <br>
+Not many publicly available implementations exist so you might have to write your own.<br>
+			</small>
+		</td>
+	</tr>
+</table>
+				</section>
+
+				<section>
+					<h2>Bayesian filters</h2>
+<table>
+	<tr>
+		<th>Advantages</th>
+		<th>Disadvantages</th>
+	</tr>
+	<tr>
+		<td width="50%">
+			<small>
+Can be modified on the fly by adding or inserting data. <br>
+Most likely faster the vector space. <br>
+Well understood and documented. <br>
+Lots of examples exist in most languages. <br>
+Simple to edit and change weights.<br>
+			</small>
+		</td>
+		<td>
+			<small>
+Slower then a neural network. <br>
+Requires training which can take time. <br>
+Not a 100% fit for its problem domain.<br>
+			</small>
+		</td>
+	</tr>
+</table>
+				</section>
+
+
+				<section>
+					<h2>Vector Space (BOARD)</h2>
 					<pre><code data-trim contenteditable>
 					import math
 
@@ -186,7 +281,7 @@ class VectorCompare:
     return topvalue / 
     	(self.magnitude(concordance1) * self.magnitude(concordance2))
 </code></pre>
-<p><a href="http://www.boyter.org/2011/06/vector-space-search-model-explained/">Vector Space Explained</a>; works by finding the sortest distance between points in multidimensional space.</p>
+<p><a href="http://www.boyter.org/2011/06/vector-space-search-model-explained/">Vector Space Explained</a>; works by finding the sortest distance between points in multidimensional space. <a href="http://www.boyter.org/2013/08/golang-vector-space-implementation/">GoLang</a>, <a href="http://www.boyter.org/2013/08/c-vector-space-implementation/">C#</a></p>
 				</section>
 
 				<section>
@@ -198,6 +293,7 @@ class VectorCompare:
 						&ldquo;One to train, one to verify&rdquo;
 					</blockquote>
 
+					<p>Tank story!</p>
 					<p>Could build a corpus using random fonts with slight deformations using a <a href="http://www.boyter.org/2013/09/collection-letters-training/">pre-built collection</a>.</p>
 					<p>But we can already extract the characters...</p>
 				</section>
@@ -206,7 +302,7 @@ class VectorCompare:
 					<h2>Building the Corpus</h2>
 					
 					<p>Download many CAPTCHA's and solve the manually. Use this to build the corpus.</p>
-					<p>Store as data or images? Data is usually faster, but can be less flexible.</p>
+					<p>Store as data or images? Data is usually faster, but can be less flexible. Perhaps use both?</p>
 <pre><code data-trim contenteditable>
 count = 0
 for letter in letters:
@@ -289,7 +385,7 @@ for letter in letters:
 				</section>
 
 				<section>
-					<h2>Result 2</h2>
+					<h2>Futher Results</h2>
 					<p>Trying on the whole data set</p>
 					<pre><code data-trim contenteditable>
 Correct Guesses    -  13.0
@@ -312,24 +408,33 @@ sys	0m0.088s
 				</section>
 
 				<section>
-					<h2>Conclusion 2</h2>
+					<h2>Futher Conclusions</h2>
 					<blockquote>
-						&ldquo;Don’t write your own Crypto algorithms unless you have a Doctorate in Cryptography&rdquo;
+						&ldquo;Don’t write your own Crypto algorithms unless you have a Doctorate in Cryptography&rdquo; - Rocky Heckman
 					</blockquote>
 					<p>Unless you have a doctorate in machine learning don't write you own CAPTCHA.</p>
-					<p>If you are being targetted nothing will stop the bad guys.</p>
+					<p>If you are being targetted <strong>nothing</strong> will stop the bad guys.</p>
 					<p>For simple websites a honeypot field will be just as effective and annoy your users less.</p>
 				</section>
 
 				<section>
+					<h2>Seriously what can I do?</h2>
+					
+					<p>If you must have a CAPTCHA use reCAPTCHA. Accessability!</p>
+					<p>Require login using twitter, facebook etc... (I and a LOT of users will <strong>not</strong> use your service if you do this)</p>
+					<p>Community participation... very hard! Remember the Digg/Reddit revolts!</p>
+					<p>Even if you do the above be prepared for spam anyway.</p>
+				</section>
+
+				<section>
 					<h2>Enjoy?</h2>
-					<p>Check out my project,</p>
-					<img style="border:none; box-shadow: none;" src="./code/searchcode_logo.png" />
-					<br /><a href="https://searchcode.com/"><small>https://searchcode.com</small></a>
-					<p>Follow me on twitter <a href="https://twitter.com/boyter">@boyter</a> or <a href="www.boyter.org">www.boyter.org</a></p>
 					<p>Get this presentation at Bitbucket and Github<br>
 						<a href="https://bitbucket.org/boyter/decodingcaptchas/">https://bitbucket.org/boyter/decodingcaptchas/</a>
 						<a href="https://github.com/boyter/decodingcaptchas">https://github.com/boyter/decodingcaptchas/</a>
+					</p>
+					<p>
+						Or read the orginal article at<br>
+						<a href="http://www.boyter.org/decoding-captchas/">http://www.boyter.org/decoding-captchas/</a>
 					</p>
 				</section>
 
